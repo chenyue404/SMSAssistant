@@ -7,11 +7,8 @@ import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
-import android.os.AsyncTask;
-import android.os.Looper;
-import android.provider.Settings;
 import android.provider.Telephony;
-import android.widget.Toast;
+import android.text.TextUtils;
 
 import com.rincyan.smsdelete.R;
 import com.rincyan.smsdelete.recyclerview.SMS;
@@ -20,7 +17,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Objects;
-import java.util.StringTokenizer;
 
 /**
  * Created by rin on 2017/6/15.
@@ -68,7 +64,7 @@ public class SMSHandler {
                 String date = dateFormat.format(formatDate);
 
                 Cursor c = db.rawQuery("select * from whitelist where textid=" + String.valueOf(id), null);
-                while(c.moveToNext()){
+                while (c.moveToNext()) {
                     c.close();
                     whitelist = true;
                 }
@@ -108,7 +104,8 @@ public class SMSHandler {
     }
 
     public int deleteSms(String smsId) {
-        if (!Telephony.Sms.getDefaultSmsPackage(context).equals(context.getPackageName()) | Objects.equals(smsId, "-1")) {
+        String defaultSmsPackage = Telephony.Sms.getDefaultSmsPackage(context);
+        if (!TextUtils.isEmpty(defaultSmsPackage) && (!defaultSmsPackage.equals(context.getPackageName()) | Objects.equals(smsId, "-1"))) {
             return 0;
         }
         String uri = "content://sms/" + smsId;
